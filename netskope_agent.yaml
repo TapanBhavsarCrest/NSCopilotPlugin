@@ -18,11 +18,11 @@ SkillGroups:
                 2. Refer this current UTC datetime and user query to calculate the start and end datetime in `%Y-%m-%dT%H:%M:%S` format. 
                    If no duration provided in user query then use default duration to `1 day`.
                 3. Use skill `GetLatestUnixTimestamp` convert start and end datetime to unix format
-                4. Refer this start and end datetime in unix format, and Use skill `GetNetskopeDlpIncidents` to fetch netskope data.
+                4. Refer this start and end datetime in unix format, and Use skill `GetNetskopeAlerts` to fetch netskope data.
 
                 User Query:
                 {{text}}
           ChildSkills:
           - "GetUTCTimestamp"
           - "GetLatestUnixTimestamp"
-          - "GetNetskopeDlpIncidents"
+          - "GetNetskopeAlerts"
