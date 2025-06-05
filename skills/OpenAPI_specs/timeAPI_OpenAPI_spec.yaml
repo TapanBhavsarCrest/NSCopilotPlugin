@@ -12,6 +12,7 @@ paths:
     get:
       summary: Get current date and time for given time zone
       description: Returns the current timestamp for given time zone.
+      operationId: GetUTCTimestamp
       parameters:
         - name: timeZone
           in: query

@@ -1,7 +1,7 @@
 Descriptor:
-  Name: CurrentUnixTimestampKQL
-  DisplayName: Current Unix Timestamp KQL Plugin
-  Description: Skills to generate current unix timestamp
+  Name: Convert To Unix Timestamp
+  DisplayName: Convert To Unix Timestamp
+  Description: Convert given datatime to unix timestamp
 
 SkillGroups:
   - Format: KQL
