@@ -20,7 +20,7 @@ paths:
         #ExamplePrompts Show me all the Netskope incidents for last 90 days.
         #ExamplePrompts Show me all the Netskope incidents from 2025/01/01 to 2025/01/07.
         #ExamplePrompts Show me the Netskope incidents from Monday Oct 23 UTC till today.
-      operationId: exportDlpIncidents
+      operationId: GetNetskopeDlpIncidents
       tags:
         - DLP Incident Export
       parameters:
@@ -148,7 +148,6 @@ paths:
                   message:
                     type: string
 
-
   /api/v2/events/datasearch/alert:
     x-netskope-params:
       serviceConfig: queryservice
@@ -169,6 +168,7 @@ paths:
         #ExamplePrompts Show me all Netskope Compromised Credential Alerts for the last 3 days.
         #ExamplePrompts Show me all Netskope Compromised Credential Alerts for last 24 hours.
         #ExamplePrompts Show me all Netskope Compromised Credential Alerts for last 24 hours with user exampleUser@netskope.com.
+      operationId: GetNetskopeAlerts
       parameters:
         - name: limit
           in: query
@@ -313,6 +313,7 @@ paths:
         Users can use this endpoint to filter and retrieve all and/or specific application events based on criteria like app, appcategory, time range and other relevant metadata.
         #ExamplePrompts show netskope application alerts for app equals Facebook from last 7 days.
         #ExamplePrompts show netskope application alerts for this month.
+      operationId: GetNetskopeApplicationEvents
       parameters:
         - description: 'Query timeout, in seconds'
           in: query
@@ -441,6 +442,7 @@ paths:
         metadata.
         #ExamplePrompts Show all page events for device equals Windows Device from last 7 days
         #ExamplePrompts get page events from 2025-05-21 to 2025-05-23
+      operationId: GetNetskopePageEvents
       parameters:
         - description: 'Query timeout, in seconds'
           in: query
@@ -577,6 +579,7 @@ paths:
 
         #ExamplePrompts show total network events for app equals DNS from last 3 days
         #ExamplePrompts Show network events from 2025/05/21 to 2025/05/23
+      operationId: GetNetskopeNetworkEvents
       parameters:
         - description: 'Query timeout, in seconds'
           in: query
@@ -702,6 +705,7 @@ paths:
         #PromptExample: fetch UCI score for user.name
         #PromptExample: What is the UCI score for abc.efg@domain.com?
         #PromptExample: WHat is the <user>'s confidence index?
+      operationId: GetNetskopeUCIScore
       requestBody:
         content:
           application/json:
@@ -744,6 +748,7 @@ paths:
           description: invalid request
       tags:
       - incidents
+
 components:
   schemas:
     '200':
