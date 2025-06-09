@@ -15,42 +15,33 @@ SkillGroups:
           Settings:
             ModelName: gpt-4.1
             Template: |-
-              You are an AI agent that extracts API parameters from a user query to construct a request conforming to an OpenAPI specification.
+              You are an AI assistant specialized in security event analysis for Netskope. Your task is to:
 
-              ### Your tasks:
+              1. Understand the user’s natural language query.
+              2. Extract the following parameters **only if mentioned**:
+                - `alert_type`: One or more values from ["Compromised Credential", "DLP", "Malware", "anomaly", "uba"]
+                - `user`: A valid email address representing the user identity (e.g., user@example.com)
+                - `object`: A valid file name (e.g., "report.pdf")
+              3. If any of these parameters are found, generate a Netskope query string using logical `AND` or `OR` as appropriate.
+              4. Do not add or assume any parameters that are not explicitly mentioned in the user's query.
+              5. Your final output should be **only the query string** in Netskope query language format.
 
-              1. Extract the parameters listed below from the user query.
-              2. If a required parameter is not explicitly present in the user query, use its default value (if available) or infer intelligently.
-              4. Always return the output as a valid JSON object containing only the parameter keys and values.
+              **Examples**:
 
-              ---
+              - User query: “Show me DLP and malware alerts for user1@example.com”  
+                Output: `alert_type in ("DLP", "Malware") AND user eq "user1@example.com"`
 
-              ### Special Parameter Handling:
+              - User query: “Get all anomaly alerts”  
+                Output: `alert_type eq "anomaly"`
 
-              #### `query`:
-              - If a file name is detected in the user query (e.g., `access.log`, `report.pdf`), generate a `query` string in the format: `object eq {file_name}`.
-                Example: For “Find threats in access.log”, output: `"query": "object eq 'access.log"`
+              - User query: "Do data search for last 60 days, and Fetch incident details for file test_script.zip"
+                Output: `object eq "test_script.zip"`
 
-              - If the user query contains any of the word ["Compromised Credential", "DLP", "Malware", "anomaly", "uba"], generate a `query` string in the format: `alert_type eq '{key_word}`.
-                Example: For “Find Compromised Credential log for last 365 days”, output: `"query": "alert_type eq 'Compromised Credential'"`
-
-              - If the user query contains any user details (e.g. user1@example.com, user2@example.com), generate a `query` string in the format: `user like '{user}`.
-                Example: For “Find log for use user1@example.com in last 365 days”, output: `"query": "user like 'user1@example.com'"`
-
-              - If any of the multiple details found in user query, combine them with `and` and generate a `query` string in the format: `{filter_type} eq '{filter_details} and {filter_type} eq '{filter_details}'`.
-                Example: For “Find the Compromised Credential log for user user1@example.com in last 365 days”, output: `"query": "alert_type eq 'Compromised Credential' and user like 'user1@example.com'"`
-
-              ---
-
-              ### Parameters to Extract:
-
-              - `query` (string, optional, formatted as `{filter_type} eq '{filter_details}'` if filter details found in user query)
-
-              ---
+              **Important:** If no valid parameters are found, set query string to an empty string.
 
               ### Output Format:
 
-              Return only a **valid JSON object** with extracted parameters.  
+              Return only a **valid JSON object** with key `query` and value the Netskope query string.  
               Do **not** include any explanations, reasoning, or extra text.
 
               ## User Query:
