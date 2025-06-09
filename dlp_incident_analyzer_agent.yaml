@@ -1,13 +1,13 @@
 Descriptor:
-    Name: Netskope and Purview File Investigation
-    DisplayName: PurSkope Agent
+    Name: PurSkopeDLP Agent
+    DisplayName: Netskope and Purview File Investigation Agent
     Description: DLP Incident Analyzer, Fetch the details from Netskope and Purview for given file object. User should mention the duration or default duration will be 1 days.
 
 SkillGroups:
     - Format: Agent
       Skills:
-        - Name: PurSkope
-          DisplayName: PurSkope Agent
+        - Name: PurSkopeDLP
+          DisplayName: Netskope and Purview File Investigation Agent
           Description: This agent is DLP Incident Analyzer which Fetch the details from Netskope and Purview for given file object. User should mention the duration or default duration will be last 7 days.
           Inputs:
             - Name: text
