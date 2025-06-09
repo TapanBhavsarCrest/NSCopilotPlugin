@@ -1,0 +1,44 @@
+Descriptor:
+    Name: EntraScopeID Agent
+    DisplayName: Entra and Netskope ID Incident Investigation Agent
+    Description: Extreact the compromised credential alert for a given user at Netskope
+
+SkillGroups:
+    - Format: Agent
+      Skills:
+        - Name: EntraScopeID
+          DisplayName: Netskope and Entra ID Incident Investigation Agent
+          Description: Extreact the compromised credential alert for a given user at Netskope
+          Inputs:
+            - Name: text
+              Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Entra
+          Settings:
+            Instructions: |-
+                - Use skill `InputSync` to gather all API input elements from user intent.
+                - Use skill `GetUTCTimestamp` with input "timeZone=UTC" and get current UTC datetime.
+                - Extract the duration from user query, If no duration provided in user query then use default duration to `1 day`.
+                - Refer this current UTC timestamp and duration inuser query to calculate the start and end datetime in `%Y-%m-%dT%H:%M:%S` format.
+                - Convert these start datetime and end datetime to unix timestamp. use skill `GetUnixTimestamp`. Input will be `{current_utc_time: start_time, current_utc_time: end_time}`
+                - Extract the parameters listed below from the user query.
+                    - `limit` (integer, required, default: 10)
+                    - `timeout` (integer, required, default: 120)
+                    - `starttime` (integer, required, convert from relative time using `GetUTCTimestamp` + `GetUnixTimestamp`)
+                    - `endtime` (integer, required, convert from relative time using `GetUTCTimestamp` + `GetUnixTimestamp`)
+                    - `offset` (integer, required, default: 0)
+                    - `query` (string, required)
+                    - `sublimit` (integer, optional)
+                    - `groupbys` (array of strings, optional)
+                    - `subgroupbys` (array of strings, optional)
+                    - `orderbys` (array of strings, optional)
+                    - `fields` (array of strings or integers, optional)
+                - Do not procede if query is empty.
+                - Refer this start and end datetime in unix format, and Use skill `GetNetskopeAlerts` to fetch netskope data.
+                - Summarize the input parameters and netskope data.
+
+                User Query:
+                {{text}}
+          ChildSkills:
+          - "InputSync"
+          - "GetUTCTimestamp"
+          - "GetUnixTimestamp"
+          - "GetNetskopeAlerts"

@@ -6,12 +6,12 @@ Descriptor:
 SkillGroups:
   - Format: KQL
     Skills:
-      - Name: GetLatestUnixTimestamp
-        DisplayName: Get Latest Unix Timestamp
+      - Name: GetUnixTimestamp
+        DisplayName: Get Unix Timestamp
         Description: Generate current unix timestamp
         Inputs:
-          - Name: time
-            Description: The input time
+          - Name: current_utc_time
+            Description: The input utc time in `%Y-%m-%dT%H:%M:%S` format
             Required: true
         Settings:
           Target: Defender
@@ -20,4 +20,4 @@ SkillGroups:
             { 
                 (dt - datetime(1970-01-01)) / 1s 
             };
-            print result = toUnixTime(datetime({{time}}))
+            print result = toUnixTime(datetime({{current_utc_time}}))

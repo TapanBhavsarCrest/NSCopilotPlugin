@@ -1,0 +1,57 @@
+Descriptor:
+    Name: Netskope API Quey Parameters
+    DisplayName: InputSync Agent
+    Description: Gathers all API input elements from user intent.
+
+SkillGroups:
+    - Format: GPT
+      Skills:
+        - Name: InputSync
+          DisplayName: InputSync Agent
+          Description: This agent will gathers all API input elements from user intent.
+          Inputs:
+            - Name: user_query
+              Description: User query/prompt. This query will contain the user intent.
+          Settings:
+            ModelName: gpt-4.1
+            Template: |-
+              You are an AI agent that extracts API parameters from a user query to construct a request conforming to an OpenAPI specification.
+
+              ### Your tasks:
+
+              1. Extract the parameters listed below from the user query.
+              2. If a required parameter is not explicitly present in the user query, use its default value (if available) or infer intelligently.
+              4. Always return the output as a valid JSON object containing only the parameter keys and values.
+
+              ---
+
+              ### Special Parameter Handling:
+
+              #### `query`:
+              - If a file name is detected in the user query (e.g., `access.log`, `report.pdf`), generate a `query` string in the format: `object eq {file_name}`.
+                Example: For “Find threats in access.log”, output: `"query": "object eq 'access.log"`
+
+              - If the user query contains any of the word ["Compromised Credential", "DLP", "Malware", "anomaly", "uba"], generate a `query` string in the format: `alert_type eq '{key_word}`.
+                Example: For “Find Compromised Credential log for last 365 days”, output: `"query": "alert_type eq 'Compromised Credential'"`
+
+              - If the user query contains any user details (e.g. user1@example.com, user2@example.com), generate a `query` string in the format: `user like '{user}`.
+                Example: For “Find log for use user1@example.com in last 365 days”, output: `"query": "user like 'user1@example.com'"`
+
+              - If any of the multiple details found in user query, combine them with `and` and generate a `query` string in the format: `{filter_type} eq '{filter_details} and {filter_type} eq '{filter_details}'`.
+                Example: For “Find the Compromised Credential log for user user1@example.com in last 365 days”, output: `"query": "alert_type eq 'Compromised Credential' and user like 'user1@example.com'"`
+
+              ---
+
+              ### Parameters to Extract:
+
+              - `query` (string, optional, formatted as `{filter_type} eq '{filter_details}'` if filter details found in user query)
+
+              ---
+
+              ### Output Format:
+
+              Return only a **valid JSON object** with extracted parameters.  
+              Do **not** include any explanations, reasoning, or extra text.
+
+              ## User Query:
+              {{user_query}}

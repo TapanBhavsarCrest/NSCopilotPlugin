@@ -1,0 +1,45 @@
+Descriptor:
+    Name: Netskope and Purview File Investigation
+    DisplayName: PurSkope Agent
+    Description: DLP Incident Analyzer, Fetch the details from Netskope and Purview for given file object. User should mention the duration or default duration will be 1 days.
+
+SkillGroups:
+    - Format: Agent
+      Skills:
+        - Name: PurSkope
+          DisplayName: PurSkope Agent
+          Description: This agent is DLP Incident Analyzer which Fetch the details from Netskope and Purview for given file object. User should mention the duration or default duration will be last 7 days.
+          Inputs:
+            - Name: text
+              Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Purview
+          Settings:
+            Instructions: |-
+                - Use skill `InputSync` to gather all API input elements from user intent.
+                - Use skill `GetUTCTimestamp` with input "timeZone=UTC" and get current UTC datetime.
+                - Extract the duration from user query, If no duration provided in user query then use default duration to `1 day`.
+                - Refer this current UTC timestamp and duration inuser query to calculate the start and end datetime in `%Y-%m-%dT%H:%M:%S` format.
+                - Convert these start datetime and end datetime to unix timestamp. use skill `GetUnixTimestamp`. Input will be `{current_utc_time: start_time, current_utc_time: end_time}`
+                - Extract the parameters listed below from the user query.
+                    - `limit` (integer, required, default: 10)
+                    - `timeout` (integer, required, default: 120)
+                    - `starttime` (integer, required, convert from relative time using `GetUTCTimestamp` + `GetUnixTimestamp`)
+                    - `endtime` (integer, required, convert from relative time using `GetUTCTimestamp` + `GetUnixTimestamp`)
+                    - `offset` (integer, required, default: 0)
+                    - `query` (string, required)
+                    - `sublimit` (integer, optional)
+                    - `groupbys` (array of strings, optional)
+                    - `subgroupbys` (array of strings, optional)
+                    - `orderbys` (array of strings, optional)
+                    - `fields` (array of strings or integers, optional)
+                - Do not procede if query is empty.
+                - Refer this start and end datetime in unix format, and Use skill `GetNetskopeDlpIncidents` to fetch netskope data.
+                - Summarize the input parameters and netskope data.
+                
+                User Query:
+                {{text}}
+   
+          ChildSkills:
+          - "InputSync"
+          - "GetUTCTimestamp"
+          - "GetUnixTimestamp"
+          - "GetNetskopeDlpIncidents"
