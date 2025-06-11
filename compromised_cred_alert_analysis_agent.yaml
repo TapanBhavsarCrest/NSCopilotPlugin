@@ -1,14 +1,14 @@
 Descriptor:
     Name: EntraScopeID Agent
     DisplayName: Entra and Netskope ID Incident Investigation Agent
-    Description: Extreact the compromised credential alert for a given user at Netskope
+    Description: Extreact the compromised credential alert for a given user at Netskope and Entra and find the correlation.
 
 SkillGroups:
     - Format: Agent
       Skills:
         - Name: EntraScopeID
           DisplayName: Netskope and Entra ID Incident Investigation Agent
-          Description: Extreact the compromised credential alert for a given user at Netskope
+          Description: Extreact the compromised credential alert for a given user at Netskope and Entra and find the correlation.
           Inputs:
             - Name: text
               Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Entra
@@ -31,9 +31,12 @@ SkillGroups:
                     - `subgroupbys` (array of strings, optional)
                     - `orderbys` (array of strings, optional)
                     - `fields` (array of strings or integers, optional)
-                - Do not procede if query is empty.
-                - Refer this start and end datetime in unix format, and Use skill `GetNetskopeAlerts` to fetch netskope data.
-                - Summarize the input parameters and netskope data.
+                - Do not procede if query string is empty.
+                - Refer this start and end datetime in unix format, and Use skill `GetNetskopeAlerts` to fetch netskope logs.
+                - Extract the user email from these netskope logs.
+                - Replace `@netskope.com` with `@netskopebd.onmicrosoft.com` and generate Entra UPN. 
+                - Refer these UPN list and use the skill `GetEntraSignInLogsV1` to fetch the Failure/Interrupted login Entra logs.
+                - Provide the correlation analysis between Entra and Netskope logs.
 
                 User Query:
                 {{text}}
@@ -42,3 +45,4 @@ SkillGroups:
           - "GetUTCTimestamp"
           - "GetUnixTimestamp"
           - "GetNetskopeAlerts"
+          - "GetEntraSignInLogsV1"

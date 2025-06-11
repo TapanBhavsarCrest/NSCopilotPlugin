@@ -27,4 +27,4 @@ SkillGroups:
         Description: The API plugin offers data search for Netskope.
     Settings:
       OpenApiSpecUrl: https://raw.githubusercontent.com/TapanBhavsarCrest/NSCopilotPlugin/refs/heads/main/skills/OpenAPI_specs/netskope_OpenAPI_spec.yaml
-      EndpointUrl: https://crest-support.de.goskope.com
+      EndpointUrl: https://alliances.goskope.com
