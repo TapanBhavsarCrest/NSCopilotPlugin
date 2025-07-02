@@ -717,6 +717,7 @@ paths:
         For SIEM ingestion, please consider using the `api/v2/dataexport`
         endpoints which are explained here:
         <https://docs.netskope.com/en/using-the-rest-api-v2-dataexport-iterator-endpoints/>
+      operationId: GetNetskopeClientStatus
       parameters:
         - description: 'Query timeout, in seconds'
           in: query
