@@ -2,12 +2,13 @@ Descriptor:
   Name: Netskope Data Search
   DisplayName: Netskope Data Search
   Description: |-
-    The API plugin offers 5 skills that range from displaying
+    The API plugin offers data search skills that range from displaying
     - Netskope Alerts
     - Netksope incidents
     - Netskope Application
     - Netskope page
     - Netskope Network
+    - Netskope client status
     - Confidence index or UCI score
     for Threat Hunting and Data Protection.
   SupportedAuthTypes:

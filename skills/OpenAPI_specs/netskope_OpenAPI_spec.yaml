@@ -696,6 +696,123 @@ paths:
       serviceConfig: queryservice
       version: 2
 
+  /api/v2/events/datasearch/clientstatus:
+    get:
+      description: >2-
+          Get device status information with the ability to filter the output based on attribute parameters. <br><br> This endpoint is intended to be used for ad-hoc query and allows users to get the device status information in the system by providing various parameters in the request. Users can use this endpoint to filter and retrieve all and/or specific device information based on criteria like hostname, device_id, time range and other relevant metadata. <br><br>
+        For example, to filter device information to only show total count of
+        device ids for a specific duration:
+        `?starttime=1731535136&endtime=1736805536&fields=count_total:count(device_id)`
+        <br> You can also filter on multiple attributes by adding an `and`
+        logical operator and another attribute in the same format as the
+        previous example. For example, to show total device count for hostname
+        equals ITE004433:
+        `?starttime=1731535136&endtime=1736805536&fields=count_total:count(device_id)&query=hostname
+        eq 'ITE004433'`<br><br>
+
+        Additional examples can be found here:
+        <https://docs.netskope.com/en/skope-it-query-language-search-examples/>
+        <br><br>
+
+        For SIEM ingestion, please consider using the `api/v2/dataexport`
+        endpoints which are explained here:
+        <https://docs.netskope.com/en/using-the-rest-api-v2-dataexport-iterator-endpoints/>
+      parameters:
+        - description: 'Query timeout, in seconds'
+          in: query
+          name: timeout
+          schema:
+            default: 180
+            type: integer
+        - description: JQL query to filter the alerts by
+          in: query
+          name: query
+          schema:
+            type: string
+        - description: 'Start time, in Unix timestamp, of the desired alerts'
+          in: query
+          name: starttime
+          schema:
+            type: integer
+        - description: 'End time, in Unix timestamp, of the desired alerts'
+          in: query
+          name: endtime
+          schema:
+            type: integer
+        - description: Query offset
+          in: query
+          name: offset
+          schema:
+            type: integer
+        - description: Number of results to limit the output by
+          in: query
+          name: limit
+          schema:
+            default: 10000
+            type: integer
+        - description: Number of results to limit the sub-aggregations by
+          in: query
+          name: sublimit
+          schema:
+            type: integer
+        - description: Fields to aggregate on
+          in: query
+          name: groupbys
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Secondary fields to aggregate on
+          in: query
+          name: subgroupbys
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Fields to sort the results by
+          in: query
+          name: orderbys
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Names of the columns whose values want to be retrieved in results.
+          in: query
+          name: fields
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientStatusResponse'
+          description: Successful Operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+          description: Bad Request
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Too Many Requests
+      summary: Get device status information.
+      x-netskope-route-params:
+        enabledInProduction: true
+        rbac:
+          apiGroup:
+            - devices
+          access: r
+      tags:
+        - events
+    x-netskope-params:
+      serviceConfig: queryservice
+      version: 2
+
   /api/v2/incidents/uba/getuci:
     post:
       summary: Get confidence index or UCI score for a user or multiple users
@@ -1869,5 +1986,194 @@ components:
               description: HTTP status code
               type: integer
               example: 200
+          type: object
+      type: object
+    ClientStatusResponse:
+      properties:
+        result:
+          items:
+            type: object
+            properties:
+              client_install_time:
+                type: integer
+                example: 1593463448
+              client_version:
+                type: string
+                example: 10.0.0.0
+              cn:
+                type: integer
+                example: 1
+              device_id:
+                type: string
+                example: oDPehfjveUYNHCYAtz0KL
+              epdlp:
+                type: object
+                properties:
+                  cpu:
+                    type: string
+                    example: 1
+                  criticalErrorsCount:
+                    type: string
+                    example: 1
+                  driverVersion:
+                    type: string
+                  enabledStatus:
+                    type: string
+                    example: active
+                  infoErrorsCount:
+                    type: string
+                    example: 19
+                  memoryInBytes:
+                    type: string
+                    example: 19384
+                  policyConfigVersion:
+                    type: string
+                    example: v10
+                  timestampInUnix:
+                    type: string
+                    example: 1691622
+              guid:
+                type: string
+                example: 00006a9c-63fc-4110-8841-72acea57c
+              heart_beat:
+                type: boolean
+                example: 'true'
+              host_info:
+                type: object
+                properties:
+                  device_make:
+                    type: string
+                    example: HP
+                  device_model:
+                    type: string
+                    example: HP ZBook 15 G3
+                  hostname:
+                    type: string
+                    example: ITE004433
+                  last_update_timestamp:
+                    type: integer
+                    example: 1714615076
+                  mac_addresses:
+                    type: array
+                    items:
+                      type: string
+                    example: 'AC:DE:48:00:11:99'
+                  managementID:
+                    type: string
+                    example: 9E22473B44F85C429348640E78FAE
+                  nsdeviceuid:
+                    type: string
+                    example: Z8wl0SokkDGt6Y5TQXs5eZ
+                  old_nsdeviceuid:
+                    type: string
+                    example: 1C07C9E3-4FA7-D8A2-48F3-A1EC13DB
+                  os:
+                    type: string
+                    example: Windows
+                  os_version:
+                    type: string
+                    example: 10.0 (1909)
+                  serial_integer:
+                    type: string
+                    example: 5CG7290
+                  steering_config:
+                    type: string
+                    example: testIntegration
+              last_connected_from_private_ip:
+                type: string
+                example: 10.0.0.0
+              last_event_timestamp:
+                type: integer
+                example: 17146156
+              last_seen_device_event:
+                type: object
+                properties:
+                  actor:
+                    type: string
+                    example: User
+                  event:
+                    type: string
+                    example: Admin Enabled
+                  npa_status:
+                    type: string
+                    example: Disabled
+                  service_name:
+                    type: string
+                    example: Internet Security
+                  status:
+                    type: string
+                    example: Enabled
+                  status_v2:
+                    type: string
+                    example: Enabled
+                  timestamp:
+                    type: integer
+                    example: 17146156
+              organization_unit:
+                type: array
+                items:
+                  type: object
+                  example: abc.local/US
+              ts:
+                type: integer
+                example: 1714616
+              ty:
+                type: string
+                example: client_status
+              user_added_time:
+                type: string
+              user_info:
+                type: object
+                properties:
+                  device_classification_custom_status:
+                    type: string
+                    example: testing
+                  device_classification_custom_status_id:
+                    type: integer
+                    example: 1
+                  device_classification_status:
+                    type: string
+                    example: Managed
+                  orgkey:
+                    type: string
+                    example: netskope
+                  userkey:
+                    type: string
+                    example: user@netskope.com
+                  username:
+                    type: string
+                    example: user@netskope.com
+              user_source:
+                type: string
+                example: foobar
+              user_status:
+                type: string
+                example: active
+              usergroup:
+                type: array
+                items:
+                  type: object
+                  example: abc
+          type: array
+        status:
+          properties:
+            count:
+              description: Number of results returned
+              type: integer
+              example: 1
+            execution:
+              description: Execution status
+              enum:
+                - Success
+                - Failed
+              type: string
+              example: SUCCESS
+            message:
+              type: string
+              example: Successfully executed
+            status_code:
+              description: HTTP status code
+              example: 200
+              type: integer
           type: object
       type: object

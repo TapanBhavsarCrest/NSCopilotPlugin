@@ -1,14 +1,14 @@
 Descriptor:
-    Name: Netskope API Quey Parameters
-    DisplayName: InputSync Agent
-    Description: Gathers all API input elements from user intent.
+    Name: Netskope Alert API Quey Parameters
+    DisplayName: Alert InputSync Agent
+    Description: Gathers Alert API input elements from user intent.
 
 SkillGroups:
     - Format: GPT
       Skills:
-        - Name: InputSync
-          DisplayName: InputSync Agent
-          Description: This agent will gathers all API input elements from user intent.
+        - Name: AlertInputSync
+          DisplayName: Alert InputSync Agent
+          Description: This agent will gathers Alert API input elements from user intent.
           Inputs:
             - Name: user_query
               Description: User query/prompt. This query will contain the user intent.
@@ -21,27 +21,35 @@ SkillGroups:
               2. Extract the following parameters **only if mentioned**:
                 - `alert_type`: One or more values from ["Compromised Credential", "DLP", "Malware", "anomaly", "uba"]
                 - `user`: A valid email address representing the user identity (e.g., user@example.com)
-                - `object`: A valid file name (e.g., "report.pdf")
+                - `acked`: Whether user has acknowledged the alert or not. ["true", "false"]
+                - `Alert_name`: A valid alert name (e.g., "Establish an access control system(s)") use 'like' operator here because alert name might be long.
+                - `app`: A valid application name (e.g. "Amazon Web Services Console", "Google Cloud Platform")
+                - `appcategory`: a valid category for an application (e.g. "IaaS/PaaS")
+                - `organization_unit`: a valid organization unit name (e.g. "sales")
+                - `instance_id`: a valid instance id (like "sysdigtest", "netskope-sysdig-integration")
               3. If any of these parameters are found, generate a Netskope query string using logical `AND` or `OR` as appropriate.
               4. Do not add or assume any parameters that are not explicitly mentioned in the user's query.
               5. Your final output should be **only the query string** in Netskope query language format.
 
               **Examples**:
 
-              - User query: “Show me DLP and malware alerts for user1@example.com”  
+              - User query: “Show me DLP and malware alerts for user1@example.com”
                 Output: `alert_type in ("DLP", "Malware") AND user eq "user1@example.com"`
 
-              - User query: “Get all anomaly alerts”  
+              - User query: “Get all anomaly alerts”
                 Output: `alert_type eq "anomaly"`
 
-              - User query: "Do data search for last 60 days, and Fetch incident details for file test_script.zip"
-                Output: `object eq "test_script.zip"`
+              - User query: "fetch alerts for Amazon Web Services Console"
+                Output: `app like "Amazon Web Services Console"`
+
+              - User query: "fetch alerts raised through sysdigtest instance"
+                Output: `instance_id like "sysdigtest"`
 
               **Important:** If no valid parameters are found, set query string to an empty string.
 
               ### Output Format:
 
-              Return only a **valid JSON object** with key `query` and value the Netskope query string.  
+              Return only a **valid JSON object** with key `query` and value the Netskope query string.
               Do **not** include any explanations, reasoning, or extra text.
 
               ## User Query:

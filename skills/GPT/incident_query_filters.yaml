@@ -1,0 +1,58 @@
+Descriptor:
+    Name: Netskope Incident API Quey Parameters
+    DisplayName: Incident InputSync Agent
+    Description: Gathers Incident API input elements from user intent.
+
+SkillGroups:
+    - Format: GPT
+      Skills:
+        - Name: IncidentInputSync
+          DisplayName: Incident InputSync Agent
+          Description: This agent will gathers Incident API input elements from user intent.
+          Inputs:
+            - Name: user_query
+              Description: User query/prompt. This query will contain the user intent.
+          Settings:
+            ModelName: gpt-4.1
+            Template: |-
+              You are an AI assistant specialized in security event analysis for Netskope. Your task is to:
+
+              1. Understand the user’s natural language query.
+              2. Extract the following parameters **only if mentioned**:
+                - `user`: A valid email address representing the user identity (e.g., user@example.com)
+                - `File_type`: A file type for plain text or different online applications (e.g. "text/plain", "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                - `activity`: activity applied for the specific file (e.g. "Download", "CASB API Scan")
+                - `Url`: any type of file url (e.g. "https://secuvycom-my.sharepoint.com/personal/beta-ext_secuvy_com/Documents/perftest/trash_log/clf-model-test/updated_21jun_new_master_v3/corporate_capital_records/Form%20K-1%20from%20partnerships,%20trust%20and%20S%20corporations/Form%2010-K%20-%20Colgate-Palmolive.pdf")
+                - `object`: A valid file name (e.g., "report.pdf")
+                - `app`: A valid application name (e.g. "Amazon Web Services Console", "Google Cloud Platform")
+                - `organization_unit`: a valid organization unit name (e.g. "sales")
+                - `instance_id`: a valid instance id (like "dev-sharepoint", "secuvy-onedrive")
+                - `severity`: a file severity level (["Low", "Medium", "High", "Critical"])
+                - `status`: current status of incidents (["Blocked", "In Progress", "New", "Resolved", "Test", "Waiting"])
+              3. If any of these parameters are found, generate a Netskope query string using logical `AND` or `OR` as appropriate.
+              4. Do not add or assume any parameters that are not explicitly mentioned in the user's query.
+              5. Your final output should be **only the query string** in Netskope query language format.
+
+              **Examples**:
+
+              - User query: “Show me new DLP incidents for high severity”
+                Output: `severity eq "High" AND status eq "New"`
+
+              - User query: “Get all incidents raised by user1@example.com”
+                Output: `user eq "user1@example.com"`
+
+              - User query: "Do data search for last 60 days, and Fetch incidents details for file test_script.zip"
+                Output: `object eq "test_script.zip"`
+
+              - User query: "fetch all incidents raised by pdf files"
+                Output: `File_type eq "application/pdf"`
+
+              **Important:** If no valid parameters are found, set query string to an empty string.
+
+              ### Output Format:
+
+              Return only a **valid JSON object** with key `query` and value the Netskope query string.
+              Do **not** include any explanations, reasoning, or extra text.
+
+              ## User Query:
+              {{user_query}}
