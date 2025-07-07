@@ -1,0 +1,28 @@
+Descriptor:
+    Name: EntraScopeRiskScore Agent
+    DisplayName: Netskope and Entra Risk Score Consolidation
+    Description: We look up the UCI score for a given user from Netskope and Risk Score from Microsoft and generate a combined score.
+
+SkillGroups:
+    - Format: Agent
+      Skills:
+        - Name: EntraScopeRiskScore
+          DisplayName: Netskope and Entra Risk Score Consolidation Agent
+          Description: We look up the UCI score for a given user from Netskope and Risk Score from Microsoft and generate a combined score.
+          Inputs:
+            - Name: text
+              Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Entra
+          Settings:
+            Instructions: |-
+                - Extract the below post request body parameter from the user query.
+                    - `users` (array, required, a list of users. The length of the list should not bigger than 512)
+                    - `fromTime` (integer, required, default: 0)
+                    - `capPerUser` (integer, optional, default: 7)
+                - Do not procede if required parameters are missing.
+                - Refer this request body parameter, and Use skill `GetNetskopeUCIScore` to fetch netskope data.
+                - Summarize the input parameters and netskope data.
+
+                User Query:
+                {{text}}
+          ChildSkills:
+          - "GetNetskopeUCIScore"
