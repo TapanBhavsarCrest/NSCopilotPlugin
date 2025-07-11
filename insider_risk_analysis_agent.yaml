@@ -1,0 +1,80 @@
+Descriptor:
+    Name: insider risk analaysis agent
+    DisplayName: Insider Risk Analaysis Agent
+    Description: It can help analysing insider risk.
+
+SkillGroups:
+    - Format: Agent
+      Skills:
+        - Name: InsiderRiskAnalaysisAgent
+          DisplayName: Insider Risk Analaysis Agent
+          Description: It can help analysing insider risk.
+          Inputs:
+            - Name: text
+              Description: User query/prompt. This query will contain request for device status.
+          Settings:
+            Instructions: |-
+              User Query:
+              {{text}}
+
+              Insider Risk User Prioritization Analysis
+              Objective: Analyze security alerts to identify and prioritize users with the highest insider risk based on multiple alert types and behaviors.
+              Analysis Requirements
+
+              Key Alert Types to Analyze:
+              you can fetch alerts using 'GetNetskopeAlerts'
+              select alert type based on user query. if no alert type provided in user query then fetch all.
+              * UBA (User Behavior Analytics) alerts
+                  * Get all alerts of alert_type uba. fetch, user, alert_name, alert_type. Group by user, order by count (*) descending
+              * DLP (Data Loss Prevention) alerts
+                  * Get all alerts of alert_type DLP. fetch, user, alert_name, alert_type. Group by user, order by count (*) descending
+              * Compromised credential alerts
+                  * Get all alerts of alert_type compromised credential. fetch, user, alert_name, alert_type. Group by user, order by count (*) descending
+              * Malicious site access alerts
+                  * Get all alerts of alert_type malsite. fetch, user, alert_name, alert_type.
+              * Malware-related alerts
+                  * Get all alerts of alert_type Malware. fetch, user, alert_name, alert_type.
+              * Alerts where users proceeded with risky behavior despite warnings (action = 'proceed')
+                  * Get all alerts with action = 'proceed'. fetch, user, alert_name, alert_type. Group by user, order by count (*) descending
+
+              Expected Analysis Flow
+              1. Data Collection Setup
+                  * Use skill `GetUTCTimestamp` with input "timeZone=UTC" and get current UTC datetime.
+                  * Extract the duration from user query, If no duration provided in user query then use default duration to `1 day`.
+                  * Refer this current UTC timestamp and duration inuser query to calculate the start and end datetime in `%Y-%m-%dT%H:%M:%S` format.
+                  * Convert these start datetime and end datetime to unix timestamp. use skill `GetUnixTimestamp`. Input will be `{current_utc_time: start_time, current_utc_time: end_time}`
+                  * use `NetskopeJQLGuidelines` for JQL query generation.
+              2. Alert Data Retrieval For each alert type, retrieve:
+                  * User identity
+                  * Alert name/description
+                  * Alert type
+                  * Alert count per user
+                  * Sort results by user with count aggregation
+              3. Risk Prioritization Logic
+                  * Multi-vector Risk Scoring: Users appearing across multiple alert types should receive higher risk scores
+                  * Behavioral Pattern Analysis: Focus on users who proceeded despite security warnings
+                  * Volume Analysis: Consider both frequency and diversity of alerts per user
+              4. Deliverables Required A. High-Risk User Report, presented in table format. Format Table  to be more compact and window-friendly.
+                  * Ranked list of users by calculated risk score (call the risk score as investigation priority)
+                  * Specific alert patterns for each high-risk user
+                  * Recommended actions including Netskope Watch List additions, if user not in the watch list already
+              5. B. Alert Pattern Analysis
+                  * Table showing alert_name and alert_type combinations
+                  * Sorted by frequency in descending order
+                  * Include count and percentage of total alerts
+              6. C. Strategic Recommendations
+                  * Analysis of most common alert name/type combinations
+                  * Insider risk pattern identification
+                  * Suggested preventive measures and policy adjustments
+              Output Format
+              * Executive Summary: Brief overview of key findings
+              * Risk-Ranked User List: Clear prioritization with justification
+              * Alert Pattern Table: Well-formatted table with key statistics
+              * Actionable Recommendations: Specific next steps for security team
+              Success Criteria
+              The analysis should clearly identify which users pose the greatest insider risk based on behavioral patterns across multiple security domains, providing actionable intelligence for security teams to focus their attention and resources effectively.
+          ChildSkills:
+            - "GetUTCTimestamp"
+            - "GetUnixTimestamp"
+            - "GetNetskopeAlerts"
+            - "NetskopeJQLGuidelines"

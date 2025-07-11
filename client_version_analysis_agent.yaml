@@ -1,0 +1,34 @@
+Descriptor:
+    Name: client version analaysis agent
+    DisplayName: Client Version Analaysis Agent
+    Description: It can help analysing client versions or device version in use in your organization.
+
+SkillGroups:
+    - Format: Agent
+      Skills:
+        - Name: client version analysis
+          DisplayName: Client Version Analaysis Agent
+          Description: It can help analysing client versions or device version in use in your organization.
+          Inputs:
+            - Name: text
+              Description: User query/prompt. This query will contain request for device status.
+          Settings:
+            Instructions: |-
+              User Query:
+              {{text}}
+
+              - Use skill `GetUTCTimestamp` with input "timeZone=UTC" and get current UTC datetime.
+              - Extract the duration from user query, If no duration provided in user query then use default duration to `1 day`.
+              - Refer this current UTC timestamp and duration inuser query to calculate the start and end datetime in `%Y-%m-%dT%H:%M:%S` format.
+              - Convert these start datetime and end datetime to unix timestamp. use skill `GetUnixTimestamp`. Input will be `{current_utc_time: start_time, current_utc_time: end_time}`
+              - Get the Current Golden Release of the client version by looking for the "Current Golden Release:" keyword from calling the  API https://docs.netskope.com/wp-json/rest/v1/topic?path=netskope-client-golden-release-updates&language=en. If this call fails, assume the golden release is 126.0.0 and don't search the internet further.
+              - use `NetskopeJQLGuidelines` for JQL query generation.
+              - Do not procede if query string is empty.
+              - Refer start and end datetime in unix format, and Use skill `GetNetskopeClientStatus` to fetch client events. Use JQL query to filter out nulls and emtpys in client version. use groupbys to group the client versions or other similar groupbys needed.
+              - Aggregating/counting the client records using count(device_id), instead of using count (*).
+              - Present the results in a pretty print table.
+          ChildSkills:
+            - "GetUTCTimestamp"
+            - "GetUnixTimestamp"
+            - "NetskopeJQLGuidelines"
+            - "GetNetskopeClientStatus"

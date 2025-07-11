@@ -1,0 +1,93 @@
+Descriptor:
+    Name: Netskope JQL Guildelines
+    DisplayName: Netskope JQL guidelines
+    Description: Gathers JQL input elements from user intent.
+
+SkillGroups:
+    - Format: GPT
+      Skills:
+        - Name: NetskopeJQLGuidelines
+          DisplayName: Netskope JQL guidelines
+          Description: This agent will gathers JQL input elements from user intent..
+          Inputs:
+            - Name: user_query
+              Description: User query/prompt. This query will contain the user intent.
+          Settings:
+            ModelName: gpt-4.1
+            Template: |-
+              ## User Query:
+              {{user_query}}
+
+              ## JQL Guidelines:
+              - use `GetFields` skill to get field names for the fetched field type.
+              - provide appropriate values for the available fields, there might be case where no fields are matching with user query.
+                So don't create any query in that case.
+              - to understand how to create JQL queries, you can refer the following examples:
+                  Purpose: Getting the top n applications by total bytes  Query: get page events applications,  sum(numbytes), group by applications
+                  Purpose: Getting get me clients broken down by client version   Query: get client events, count(*), group by client version.
+                  Purpose: Are my users sharing content with a competitor?        Query: activity eq Share and to_user like @competitor.com
+                  Purpose: Are my user sharing outside the organization?  Query: activity eq Share and to_user notlike @mycompany.com and to_user neq ''
+                  Purpose: Do I have Non-Sanctioned Google Apps usage?    Query: app like google and instance_id notlike mycompany and from_user notlike mycompany.com
+                  Purpose: Do I have high risk applications outside of the US?    Query: app-risk eq high and dst_country neq US and dst_country neq ''
+                  Purpose: Are my users sending email messages to competitors?    Query: activity eq 'Send' and to_user like '@competitor.com'
+                  Purpose: Is anyone outside of HR (or finance, or support) downloading from an HR (or finance, or CRM) app?      Query: organization_unit neq [NAME] and activity eq Download and category eq [CAT NAME]
+                  Purpose: Is anyone uploading to apps whose terms don’t specify that the customer owns the data? Query: activity eq Upload and app-cci-who-owns-data eq 'Vendor owns the data'
+                  Purpose: Is anyone uploading to business intelligence apps whose terms don’t specify that the customer owns the data?   Query: category eq 'Business Intelligence' and app-cci-who-owns-data eq 'Vendor owns the data' and activity eq Upload
+                  Purpose: Show downloads from vulnerable apps    Query: activity eq Download and app-cci-vuln-exploit neq None
+                  Purpose: Show any shares from an app that ISN’T Cloud Storage   Query: category neq 'Cloud Storage' and activity eq Share
+                  Purpose: Show any failed logins to any Finance/Accounting app   Query: activity eq 'Login Failed' and category eq Finance/Accounting
+                  Purpose: Show logins to any Finance/Accounting app by people outside of Finance, except for Expensify   Query: organization_unit neq [NAME] and activity eq Login and app neq Expensify
+                  Purpose: Show any data modifications in Finance/Accounting apps Query: category eq 'Finance/Accounting' and activity eq Edit or category eq 'Finance/Accounting' and activity eq Delete
+                  Purpose: What happened to that document after someone downloaded it?    Query: object like '[partial name]' OR user eq [name] and object like '[partial name]'
+                  Purpose: Show uploads events to Social Media > 10MB     Query: category eq Social and client_bytes > 10000000
+                  Purpose: Show downloads >1GB    Query: server_bytes > 1000000000
+                  Purpose: Show Box Sync client activity  Query: useragent like 'Box Sync'
+                  Purpose: Show HR apps that offer Encryption@Rest with Tenant managed keys       Query: category eq HR and app-cci-encrypt-tenant-managed-key eq Yes
+                  Purpose: Show Mozy backup agent usage   Query: app eq Mozy and useragent like kalypso
+                  Purpose: Show events that don’t have user binding       Query: user like '10.' or user like '172.16.' or user like '172.17.' or user like '172.18.' or user like '172.19.' or user like '172.20.' or user like '172.21.' or user like '172.22.' or user like '172.23.' or user like '172.24.' or user like '172.25.' or user like '172.26.' or user like '172.27.' or user like '172.28.' or user like '172.29.' or user like '172.30.' or user like '172.31.' or user like '192.168.'
+                  Purpose: Show events that DO have user binding  Query: user notlike '10.' and user notlike '172.16.' and user notlike '172.17.' and user notlike '172.18.' and user notlike '172.19.' and user notlike '172.20.' and user notlike '172.21.' and user notlike '172.22.' and user notlike '172.23.' and user notlike '172.24.' and user notlike '172.25.' and user notlike '172.26.' and user notlike '172.27.' and user notlike '172.28.' and user notlike '172.29.' and user notlike '172.30.' and user notlike '172.31.' and user notlike '192.168.'
+                  Purpose: Field IS empty Query: organization_unit eq ''
+                  Purpose: Field is NOT empty     Query: organization_unit neq ''
+                  Purpose: Case insensitive search of string netskope in the object field Query: object ~ 'netskope(?i)'
+                  Purpose: Show events from various OS endpoints  Query: os like NT or os like 7 or os like XP or os like 8.1 or os like 2000 or os like 8 or os like 'Windows Vista' or os eq unknown or os eq 'Mac OS' or os eq Linux or os eq Android or os eq 'Snow Leopard' or os eq BlackBerry
+                  Purpose: Show events that involved Powerpoint files     Query: object ~ '.pptx(?i)'
+                  Purpose: Show high risk app usage       Query: app-risk eq high
+                  Purpose: Show high risk user usage      Query: user-risk eq high
+                  Purpose: Show mobile agent activity     Query: access_method eq 'Mobile Profile'
+                  Purpose: Show non-blocked app traffic (useful for log Risk Insights)    Query: action neq block
+                  Purpose: Show non-blocked application activities (useful for log Risk Insights) Query: Url2Activity eq yes
+                  Purpose: Show users searching for Jobs on LinkedIn      Query: app eq 'Linkedin' and object_type eq 'Job'
+                  Purpose: Get a DLP report       Query: alert_type eq DLP
+                  Purpose: Show which apps leverage AWS   Query: app-cci-apphosting-provider eq 'Amazon Web Services'
+                  Purpose: Show upload/send/transfer/post to Cloud Storage / Cloud Backup / Consumer: Content sharing where you have given away the rights to your own data due to poor terms and conditions      Query: app-cci-who-owns-data eq 'Vendor owns the data' and ( activity eq Upload or activity eq Send or activity eq Transfer or activity eq Post) and category = 'Cloud Storage' or category = 'Cloud Backup' or category = 'Consumer: Content Sharing'
+                  Purpose: Show high risk apps but takes away some noisy ones     Query: app-risk = high and (category neq 'Data & Analysis' and category neq Marketing and category neq 'Web Analytics' and category neq Security and category neq eCommerce )
+                  Purpose: Show app usage that could be violating German Data Sovereignty Laws (using Social as the example category; replace with HR, Finance, or other appropriate app category)        Query: src_country eq DE and dst_country neq DE and category eq Social
+                  Purpose: Investigate if someone has downloaded from sanctioned and uploaded to unsanctioned     Query: user eq xxx@netskope.com and ((activity eq 'Download' and app-cci-app-tag eq Sanctioned) or ( activity eq 'Upload' and app-cci-app-tag eq Unsanctioned))
+                  Purpose: Are users uploading to apps that will own my data?     Query: app-cci-who-owns-data eq 'Vendor owns the data' and activity eq Upload
+                  Purpose: What are the critical PCI incidents in the last 30 days?       Query: dlp_profile eq 'DLP-PCI' and dlp_rule_severity eq Critical
+                  Purpose: Which apps used by my workforce can be source-IP restricted?   Query: app-cci-src-ip-enforcement eq Yes
+                  Purpose: Which of the apps used by my workforce can use SAML SSO?       Query: app-cci-sso eq SAML
+                  Purpose: Show example of sessionization – Netskope log parsing differentiation. This reports on human usage (which is useful), not each individual http session (which is not useful)   Query: req_cnt > 1
+                  Purpose: Show sharing detected from log parsing Query: Url2Activity eq yes and activity eq Share
+                  Purpose: Show posting detected from log parsing Query: Url2Activity eq yes and activity eq Post
+                  Purpose: Show alerts for high risk users        Query: user-risk eq high and alert eq yes
+                  Purpose: Show all file sharing outside the organization Query: activity eq Share and to_user notlike @netskope.com and object_type eq 'File' and object neq ''
+                  Purpose: Show all destination countries outside EU      Query: dst_country neq BE and dst_country neq BG and dst_country neq DK and dst_country neq DE and dst_country neq EE and dst_country neq FI and dst_country neq FR and dst_country neq GR and dst_country neq IE and dst_country neq IT and dst_country neq HR and dst_country neq LV and dst_country neq LT and dst_country neq LU and dst_country neq MT and dst_country neq NL and dst_country neq AT and dst_country neq PL and dst_country neq PT and dst_country neq RO and dst_country neq SE and dst_country neq SK and dst_country neq SI and dst_country neq ES and dst_country neq CZ and dst_country neq HU and dst_country neq GB and dst_country neq CY and dst_country neq EU
+                  Purpose: Search for all user logins for a period of time        Query: activity eq 'Login Successful' and user from albertd@netskope.com to userz@netskope.com
+                  Purpose: Categories commonly excluded from ShadowIT analysis    Query: (category neq 'Data & Analysis' and category neq eCommerce and category neq Marketing and category neq Security and category neq Social and category neq 'Tracking apps' and category neq 'Web Analytics' and category neq 'Web Proxies/Anonymizers')
+                  Purpose: Show patient zero      Query: (alert_name eq 'Patient Zero')
+                  Purpose: Show alerts associated with this malicious file hash   Query: (md5 eq '<MD5>')
+
+              - Parameter guidelines:
+                  parameter ‘fields’ takes in sql select statement syntax for selecting fields and aggregating fields. Don’t leave space after the comma.
+                  Aggregation: For example, can aggregate user field as ‘users:count_distinct(user)’, where you are counting the distinct users and assigning users as an alias for the output. For aggregates please always create an alias in the specified format as this is required by the orderbys field.
+                  Don't create alias using this format 'count(*) as count' as this is not supported. Instead do total_count:count(*).
+                  orderbys: Sample ’total_bytes desc.’. Sorting order DESC or ASC is always required. It can take multiple comma separated fields. Don’t leave space after the comma.
+
+                  User query field to filter app with null: query: “app neq ‘’”
+                  Use numbytes field for total bytes uploaded and downloaded
+                  subgroupbys: don't use this field as this will be deprecated.
+              - Return only generated JQL query.
+          ChildSkills:
+          - "GetFields"
+
