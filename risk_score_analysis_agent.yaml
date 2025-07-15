@@ -14,7 +14,7 @@ SkillGroups:
               Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Entra
           Settings:
             Instructions: |-
-                - Get Risk score of the user from entra using skill `GetEntraRiskyUsers`
+                - use the skill `AskUploadedFiles` to fetch the risk level for that user email using `Entra_logs.txt`.
                 - Get Risk score of the user from netskope using skill `NetskopeRiskScoreAgent`
                 - Combine both the scores and generate a consolidated score
 
@@ -22,4 +22,4 @@ SkillGroups:
                 {{text}}
           ChildSkills:
           - "NetskopeRiskScoreAgent"
-          - "GetEntraRiskyUsers"
+          - "AskUploadedFiles"

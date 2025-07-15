@@ -17,7 +17,7 @@ SkillGroups:
                 Use mentioned two skills to generate the correlation output.
                 - Do not procede if query string is empty.
                 - Extract the user email from user query/text.
-                - use the skill `AskUploadedFiles` to fetch the Failure/Interrupted login Entra logs for that user email as UPN list using `EntraSignOnLogs.txt`.
+                - use the skill `AskUploadedFiles` to fetch the Failure/Interrupted login Entra logs for that user email as UPN list using `Entra_logs.txt`.
                 - Use skill `AlertLookupAgent` to gather all netskope alerts for compromised credential as per user query.
                 - Provide the correlation analysis between output of GetEntraSignInLogsV1 and AlertLookupAgent.
 

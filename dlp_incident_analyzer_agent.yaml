@@ -14,7 +14,7 @@ SkillGroups:
               Description: User query/prompt. This query will contain the file object details and duration for which you want to fetch the details from Netksope and Purview
           Settings:
             Instructions: |-
-                - Use skill `AskUploadedFiles` to fetch purview data for the file Incidents from `purviewsampledata.txt`.
+                - Use skill `AskUploadedFiles` to fetch purview data for the file Incidents from `Purview_logs.docx`.
                 - Use skill `NetskopeIncidentAgent` to fetch netskope file Incidents based the required parameters.
                 - correlate Purview and netskope data.
 
